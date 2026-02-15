@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sometype+Mono:ital,wght@0,400;0,500;0,600;0,700;1,700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e47a17;
+        }
+
+        #game {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="game"></canvas>
+    <script>
+        let canvas = document.querySelector('#game');
+        let context = canvas.getContext('2d');
+        canvas.width = 1500;
+        canvas.height = 700;
+
+        const paddleWidth = 18,
+            paddleHeight = 120,
+            paddleSpeed = 8,
+            ballRadius = 12,
+            initialBallSpeed = 8,
+            maxBallSpeed = 40,
+            netWidth = 5,
+            netColor = "white";
+
+        let drawNet = () => {
+            for (let i = 0; i <= canvas.height; i += 15) {
+                drawRect(canvas.width / 2 - netWidth / 2, i, netWidth, 10, netColor);
+            }
+        }
+
+        let drawRect = (x, y, width, height, color) => {
+            context.fillStyle = color;
+            context.fillRect(x, y, width, height);
+        }
+
+        let drawCircle = (x, y, radius, color) => {
+            context.fillStyle = color;
+            context.beginPath();
+            context.arc(x, y, radius, 0, Math.PI * 2, false);
+            context.closePath();
+            context.fill();
+        }
+
+        let drawText = (text, x, y, color, fontSize = 60, fontWeight = "bold", font = "Sometype Mono") => {
+            context.fillStyle = color;
+            context.font = `${fontSize}px ${font}`;
+            context.textAlign = "center";
+            context.fillText(text, x, y);
+        }
+
+        let createPaddle = (x, y, width, height, color) => {
+            return {
+                x, y, width, height, color, score: 0
+            };
+        }
+
+        let createBall = (x, y, radius, velocityX, velocityY, color) => {
+            return {
+                x, y, radius, velocityX, velocityY, color, speed: initialBallSpeed
+            };
+        }
+
+        const user = createPaddle(15, canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "white");
+        const com = createPaddle(canvas.width - paddleWidth - 15, canvas.height / 2 - paddleHeight / 2, paddleWidth, paddleHeight, "white");
+
+        let ball = createBall(canvas.width / 2, canvas.height / 2, ballRadius, initialBallSpeed, initialBallSpeed, "white");
+
+        let movePaddle = (event) => {
+            const rect = canvas.getBoundingClientRect();
+            user.y = event.clientY - rect.top - user.height / 2;
+        }
+
+        let collision = (b, p) => {
+            return (
+                b.x + b.radius > p.x && b.x - b.radius < p.x + p.width && b.y + b.radius > p.y && b.y - b.radius < p.y + p.height
+            );
+        }
+
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = Math.random() * (canvas.height - ball.radius * 2) + ball.radius;
+            ball.velocityX = -ball.velocityX;
+            ball.speed = initialBallSpeed;
+        }
+
+        function update() {
+            if (ball.x - ball.radius < 0) {
+                com.score++;
+                resetBall();
+            } else if (ball.x + ball.radius > canvas.width) {
+                user.score++;
+                resetBall();
+            }
+
+            ball.x += ball.velocityX;
+            ball.y += ball.velocityY;
+
+            com.y += (ball.y - (com.y + com.height / 2)) * 0.06;
+
+            if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+                ball.velocityY = -ball.velocityY;
+            }
+
+            let player = ball.x + ball.radius < canvas.width / 2 ? user : com;
+            if (collision(ball, player)) {
+                const collidePoint = ball.y - (player.y + player.height / 2);
+                const collideAngle = (Math.PI / 4) * (collidePoint / (player.height / 2));
+                const direction = ball.x + ball.radius < canvas.width / 2 ? 1 : -1;
+                ball.velocityX = direction * ball.speed * Math.cos(collideAngle);
+                ball.velocityY = direction * ball.speed * Math.sin(collideAngle);
+
+                ball.speed += 0.2;
+                if (ball.speed > maxBallSpeed) {
+                    ball.speed = maxBallSpeed;
+                }
+            }
+        }
+
+        function render() {
+            drawRect(0, 0, canvas.width, canvas.height, "BLACK");
+            drawNet();
+
+            drawText(user.score, canvas.width / 4, canvas.height / 2, "GRAY", 120, 'bold');
+            drawText(com.score, (3 * canvas.width) / 4, canvas.height / 2, "GRAY", 120, 'bold');
+
+            drawRect(user.x, user.y, user.width, user.height, user.color);
+            drawRect(com.x, com.y, com.width, com.height, com.color);
+
+            drawCircle(ball.x, ball.y, ball.radius, ball.color);
+        }
+
+        function gameLoop() {
+            update();
+            render();
+        }
+
+        const framePerSec = 60;
+        setInterval(gameLoop, 1000 / framePerSec);
+        canvas.addEventListener('mousemove', movePaddle);
+    </script>
+</body>
+
+</html>

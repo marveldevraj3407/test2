@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing Text</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        h1 {
+            margin: 0%;
+            padding: 0%;
+            color: #111;
+            font-size: 100px;
+        }
+
+        h1 span {
+            display: table-cell;
+            margin: 20px;
+            padding: 0.2rem;
+            animation: animate 2.5s ease-in-out infinite;
+        }
+
+        h1 span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        h1 span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        h1 span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        h1 span:nth-child(4) {
+            animation-delay: 0.9s;
+        }
+
+        h1 span:nth-child(5) {
+            animation-delay: 1.2s;
+        }
+
+        h1 span:nth-child(6) {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes animate {
+
+            0%,
+            100% {
+                color: #fff;
+                filter: blur(1px);
+                text-shadow: 0 0 10px #ffdd00,
+                    0 0 20px #ffdd00,
+                    0 0 400px #ffdd00,
+                    0 0 80px #ffdd00,
+                    0 0 120px #ffdd00,
+                    0 0 200px #ffdd00,
+                    0 0 300px #ffdd00,
+                    0 0 400px #ffdd00;
+            }
+
+            5%,
+            95% {
+                color: #111;
+                filter: blur(0px);
+                text-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        <span>D</span>
+        <span>E</span>
+        <span>V</span>
+        <span>R</span>
+        <span>A</span>
+        <span>J</span>
+    </h1>
+</body>
+
+</html>

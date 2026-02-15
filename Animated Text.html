@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animated Text</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Orbitron:wght@400..900&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: red;
+        overflow: hidden;
+      }
+
+      .letter-change-text {
+        font-family: "Orbitron", sans-serif;
+        font-size: clamp(3rem, 10vw, 10rem);
+        color: white;
+        animation: glow 2s forwards;
+      }
+
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+@keyframes glow {
+        50% {
+            color: var(--white);
+            text-shadow: 0 0 0.6rem var(--white), 0 0 1.5rem var(--main2), -0.2rem 0.1rem 1rem var(--main2), 0.2rem 0.1rem 1rem var(--main2), 0 -0.5rem 2rem var(--main), 0 0.5rem 3rem var(--main);
+        }
+    }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1 class="letter-change-text" data-text-value="MarvelDevraj">
+        MarvelDevraj
+      </h1>
+    </div>
+    <script>
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let interval = null;
+
+      function changeTextLetter(event) {
+        let iteration = 0;
+
+        const initText = event.target.innerText;
+
+        clearInterval(interval);
+
+        interval = setInterval(() => {
+          event.target.innerText = initText
+            .split("")
+            .map((letter, index) => {
+              if (index < iteration) {
+                return event.target.dataset.textValue[index];
+              }
+
+              return letters[Math.floor(Math.random() * 26)];
+            })
+            .join("");
+          if (iteration >= event.target.dataset.textValue.length) {
+            clearInterval(interval);
+          }
+
+          iteration += 1 / 10;
+        }, 50);
+      }
+
+      const animTexts = document.querySelectorAll(".letter-change-text");
+
+      animTexts.forEach((element) => {
+        element.addEventListener("mouseover", () => {
+          changeTextLetter(event);
+        });
+      }); 
+    </script>
+  </body>
+</html>
